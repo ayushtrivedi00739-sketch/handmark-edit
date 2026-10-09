@@ -42,7 +42,7 @@ const blocksTextLength = (blocks: z.infer<typeof blockSchema>[]) =>
     .replace(/\s/g, "").length;
 
 export const recognizeHandwriting = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => z.object({ image: imageSchema }).parse(data))
+  .validator((data: unknown) => z.object({ image: imageSchema }).parse(data))
   .handler(async ({ data }) => {
     const { runAi, OCR_PROMPT } = await import("./ai.server");
     const text = (
@@ -57,7 +57,7 @@ export const recognizeHandwriting = createServerFn({ method: "POST" })
   });
 
 export const structureDocument = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => z.object({ text: z.string().min(1).max(60_000) }).parse(data))
+  .validator((data: unknown) => z.object({ text: z.string().min(1).max(60_000) }).parse(data))
   .handler(async ({ data }) => {
     const { runAi, STRUCTURE_PROMPT } = await import("./ai.server");
     const raw = await runAi(STRUCTURE_PROMPT, [{ type: "input_text", text: `Return JSON for this transcription:\n\n${data.text}` }], true);
@@ -77,7 +77,7 @@ export const structureDocument = createServerFn({ method: "POST" })
   });
 
 export const extractReferenceFormat = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => z.object({ image: imageSchema }).parse(data))
+  .validator((data: unknown) => z.object({ image: imageSchema }).parse(data))
   .handler(async ({ data }) => {
     const { runAi, FORMAT_PROMPT } = await import("./ai.server");
     const raw = await runAi(
