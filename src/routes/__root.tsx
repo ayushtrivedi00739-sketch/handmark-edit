@@ -116,6 +116,23 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  // A page left open across an app update can request code files that no longer
+  // exist ("Importing a module script failed"). Reload once to pick up the new version.
+  useEffect(() => {
+    const onPreloadError = (event: Event) => {
+      if (sessionStorage.getItem("chunk-reload")) return;
+      event.preventDefault();
+      sessionStorage.setItem("chunk-reload", "1");
+      window.location.reload();
+    };
+    const clear = setTimeout(() => sessionStorage.removeItem("chunk-reload"), 10000);
+    window.addEventListener("vite:preloadError", onPreloadError);
+    return () => {
+      clearTimeout(clear);
+      window.removeEventListener("vite:preloadError", onPreloadError);
+    };
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}

@@ -19,6 +19,6 @@ export async function deleteDoc(id: string) {
 
 export async function listDocs(): Promise<DocRecord[]> {
   const docKeys = (await keys()).filter((k) => String(k).startsWith("doc:"));
-  const docs = (await getMany<DocRecord>(docKeys)).filter(Boolean);
+  const docs = (await getMany<DocRecord | undefined>(docKeys)).filter((d): d is DocRecord => Boolean(d));
   return docs.sort((a, b) => b.updatedAt - a.updatedAt);
 }
