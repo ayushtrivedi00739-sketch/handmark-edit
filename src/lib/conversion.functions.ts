@@ -60,7 +60,7 @@ export const structureDocument = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => z.object({ text: z.string().min(1).max(60_000) }).parse(data))
   .handler(async ({ data }) => {
     const { runAi, STRUCTURE_PROMPT } = await import("./ai.server");
-    const raw = await runAi(STRUCTURE_PROMPT, [{ type: "input_text", text: data.text }], true);
+    const raw = await runAi(STRUCTURE_PROMPT, [{ type: "input_text", text: `Return JSON for this transcription:\n\n${data.text}` }], true);
     let parsed: unknown;
     try {
       parsed = JSON.parse(raw);
